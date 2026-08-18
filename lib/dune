@@ -1,0 +1,4 @@
+(library
+ (name vms_core_subset)
+ (public_name vms-core-subset)
+ (modules corridor_protocol risk_gate mm_utils))

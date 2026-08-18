@@ -1,0 +1,6 @@
+_build/
+*.vo
+*.vok
+*.vos
+*.glob
+.*.aux

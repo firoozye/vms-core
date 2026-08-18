@@ -1,0 +1,4 @@
+(executable
+ (name test_quoter)
+ (modules test_quoter)
+ (libraries vms_core_subset))
