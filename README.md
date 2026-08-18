@@ -1,6 +1,8 @@
 # VMS Core Subset
 
 This repository contains a self-contained, low-latency core subset of the **Verified Market Simulator (VMS)** matching engine and its associated mathematical proofs of correctness.
+This is a subset of the core work by begun as a project with https://github.com/alunity, https://github.com/Maksymilian-Sieklinski, https://github.com/dachenzo.
+
 
 ## Structure
 
