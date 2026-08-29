@@ -1,0 +1,31 @@
+name: Continuous Integration
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up OCaml
+        uses: ocaml/setup-ocaml@v2
+        with:
+          ocaml-compiler: 5.2.0
+          opam-depext: true
+
+      - name: Install Dependencies
+        run: |
+          opam install --deps-only --with-test .
+          opam install coq
+
+      - name: Compile and Verify Proofs
+        run: opam exec -- dune build
+
+      - name: Run Unit Tests
+        run: opam exec -- dune runtest

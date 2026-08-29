@@ -36,3 +36,16 @@ coqc SafetyProofs.v
 ```
 
 The output of `coqc SafetyProofs.v` should complete silently without errors, proving that the risk gate is mathematically guaranteed to prevent position limit violations under any inputs.
+
+## Accessing Free LOBSTER Market Data
+
+To run high-throughput backtesting simulations, the engine ingests binary market feeds. You can obtain free, high-density Level 3 LOBSTER data samples directly from the official LOBSTER data catalog:
+
+1. Visit [LOBSTER Data Samples](https://lobsterdata.com/info/DataSamples.php).
+2. Download the free sample CSV files containing the `message` and `orderbook` logs (e.g., for AAPL or AMZN).
+3. Use the converter utility script provided in the main VMS toolchain (`scripts/csv_to_tvms.py`) to pack the LOBSTER CSV files into the high-performance `.tvms` binary format:
+   ```bash
+   python3 scripts/csv_to_tvms.py --messages message.csv --orderbook orderbook.csv --output data.tvms
+   ```
+
+A lightweight synthetic mock data file is built directly into our test suite to allow you to compile, build, and verify simulator loops locally without downloading external files.
