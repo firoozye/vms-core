@@ -22,7 +22,7 @@ jobs:
       - name: Install Dependencies
         run: |
           opam install --deps-only --with-test .
-          opam install coq
+          opam install coq.8.19.2
 
       - name: Compile and Verify Proofs
         run: opam exec -- dune build
