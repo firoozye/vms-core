@@ -25,27 +25,40 @@ dune build
 dune exec test/test_quoter.exe
 ```
 
-## Verifying the Proofs
+## Verifying the Proofs & Compiling to OCaml
 
-The correctness proofs are written in Rocq. To check the position boundary enforcement proof:
+The correctness proofs are written in Rocq. To check the proofs and extract OCaml code:
 
 ```bash
 cd proof/
+# Verify core components
 coqc RiskGate.v
 coqc SafetyProofs.v
+
+# Extract Coq proof specifications to OCaml code
+coqc Extraction.v
 ```
 
-The output of `coqc SafetyProofs.v` should complete silently without errors, proving that the risk gate is mathematically guaranteed to prevent position limit violations under any inputs.
+The output of `coqc SafetyProofs.v` should complete silently without errors, proving that the risk gate is mathematically guaranteed to prevent position limit violations. Running `coqc Extraction.v` will dynamically generate a clean OCaml file `extracted_risk_gate.ml` that maps precisely to our verified Coq model.
 
-## Accessing Free LOBSTER Market Data
+## Running the End-to-End Python-OCaml Pipeline
 
-To run high-throughput backtesting simulations, the engine ingests binary market feeds. You can obtain free, high-density Level 3 LOBSTER data samples directly from the official LOBSTER data catalog:
+The simulator relies on a Python preprocessing stage to pack raw CSV feeds into high-speed binary formats, and a lock-free corridor layout for communication:
+
+1. **Python Shared Memory Corridor**: Look at `lib/corridor_protocol.py`, which mirrors the memory-mapped layout in `lib/corridor_protocol.ml` to parse states.
+2. **Convert CSV data**: Run our packing script on the mock LOBSTER data files included in the test directory:
+   ```bash
+   python3 scripts/csv_to_tvms.py test/message_mock.csv test/orderbook_mock.csv data.tvms
+   ```
+   This generates `data.tvms`, a packed binary file that the OCaml backtester can map directly into memory.
+
+## Accessing Real LOBSTER Market Data
+
+To run full simulations, you can obtain free, high-density Level 3 LOBSTER data samples directly from the official LOBSTER catalog:
 
 1. Visit [LOBSTER Data Samples](https://lobsterdata.com/info/DataSamples.php).
 2. Download the free sample CSV files containing the `message` and `orderbook` logs (e.g., for AAPL or AMZN).
-3. Use the converter utility script provided in the main VMS toolchain (`scripts/csv_to_tvms.py`) to pack the LOBSTER CSV files into the high-performance `.tvms` binary format:
+3. Convert them using the same python script:
    ```bash
-   python3 scripts/csv_to_tvms.py --messages message.csv --orderbook orderbook.csv --output data.tvms
+   python3 scripts/csv_to_tvms.py message.csv orderbook.csv data.tvms
    ```
-
-A lightweight synthetic mock data file is built directly into our test suite to allow you to compile, build, and verify simulator loops locally without downloading external files.
